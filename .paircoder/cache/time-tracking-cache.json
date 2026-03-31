@@ -1,8 +1,128 @@
 {
-  "_active": {
-    "task_id": "T1.1",
-    "timer_id": "local-20260331145945",
-    "description": "T1.1: Python Project Scaffolding",
-    "start": "2026-03-31T14:59:45.739979"
+  "T1.1": {
+    "entries": [
+      {
+        "id": "local-20260331145945",
+        "task_id": "T1.1",
+        "description": "T1.1: Python Project Scaffolding",
+        "start": "2026-03-31T14:59:45.739979",
+        "end": "2026-03-31T15:04:01.197537",
+        "duration_seconds": 255.457558,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 255.457558
+  },
+  "T1.2": {
+    "entries": [
+      {
+        "id": "local-20260331150415",
+        "task_id": "T1.2",
+        "description": "T1.2: Config Management",
+        "start": "2026-03-31T15:04:15.228052",
+        "end": "2026-03-31T15:16:58.286381",
+        "duration_seconds": 763.058329,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 763.058329
+  },
+  "T1.3": {
+    "entries": [
+      {
+        "id": "local-20260331151731",
+        "task_id": "T1.3",
+        "description": "T1.3: Cloudflare Worker Skeleton",
+        "start": "2026-03-31T15:17:31.624641",
+        "end": "2026-03-31T15:26:15.933125",
+        "duration_seconds": 524.308484,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 524.308484
+  },
+  "T1.4": {
+    "entries": [
+      {
+        "id": "local-20260331154538",
+        "task_id": "T1.4",
+        "description": "T1.4: Auth Middleware",
+        "start": "2026-03-31T15:45:38.463406",
+        "end": "2026-03-31T15:47:26.802652",
+        "duration_seconds": 108.339246,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 108.339246
+  },
+  "T1.5": {
+    "entries": [
+      {
+        "id": "local-20260331154852",
+        "task_id": "T1.5",
+        "description": "T1.5: D1 Initial Migration",
+        "start": "2026-03-31T15:48:52.516250",
+        "end": "2026-03-31T15:51:00.089648",
+        "duration_seconds": 127.573398,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 127.573398
+  },
+  "T1.6": {
+    "entries": [
+      {
+        "id": "local-20260331155218",
+        "task_id": "T1.6",
+        "description": "T1.6: Workers KV Namespace",
+        "start": "2026-03-31T15:52:18.409553",
+        "end": "2026-03-31T15:54:10.116516",
+        "duration_seconds": 111.706963,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 111.706963
+  },
+  "T1.7": {
+    "entries": [
+      {
+        "id": "local-20260331155529",
+        "task_id": "T1.7",
+        "description": "T1.7: Structured Logging",
+        "start": "2026-03-31T15:55:29.316738",
+        "end": "2026-03-31T16:06:51.368720",
+        "duration_seconds": 682.051982,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 682.051982
+  },
+  "T1.8": {
+    "entries": [
+      {
+        "id": "local-20260331160853",
+        "task_id": "T1.8",
+        "description": "T1.8: CLI Entry Point",
+        "start": "2026-03-31T16:08:53.966932",
+        "end": "2026-03-31T16:10:41.344902",
+        "duration_seconds": 107.37797,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 107.37797
+  },
+  "T1.9": {
+    "entries": [
+      {
+        "id": "local-20260331161345",
+        "task_id": "T1.9",
+        "description": "T1.9: Example Config Files",
+        "start": "2026-03-31T16:13:45.283618",
+        "end": "2026-03-31T16:15:14.798642",
+        "duration_seconds": 89.515024,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 89.515024
   }
 }
