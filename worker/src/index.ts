@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { authMiddleware } from "./middleware/auth";
 import { foreignKeysMiddleware } from "./middleware/db";
+import { profileRoutes } from "./routes/profiles";
 import type { Env } from "./types";
 
 const app = new Hono<{ Bindings: Env }>();
@@ -21,6 +22,8 @@ api.use("*", foreignKeysMiddleware);
 api.get("/ping", (c) => {
   return c.json({ message: "authenticated" });
 });
+
+api.route("/profiles", profileRoutes);
 
 app.route("/api", api);
 
