@@ -1,0 +1,41 @@
+# DateNight Autopilot — Configuration
+# Copy to config.yaml and customize for your setup.
+# Environment variables override these values (prefix: DATENIGHT__).
+# Auth token is NOT stored here — set DATENIGHT_AUTH_TOKEN env var instead.
+
+# Your location (used for venue discovery)
+location:
+  zip: "75165"            # Zip code for venue searches
+  city: "Waxahachie"      # City name (used in Resy deep links)
+  state: "TX"             # State abbreviation
+  radius_miles: 10        # Default search radius; auto-expands if sparse
+
+# Local LLM settings (Ollama)
+ollama:
+  model: "llama3.1:8b"    # Model name (llama3.1:8b, mistral:7b, llama3.1:70b)
+  host: "http://localhost:11434"  # Ollama API endpoint
+  temperature: 0.8        # Phase 1 (Generate) — higher for creativity
+  phase2_temperature: 0.3 # Phase 2 (Critique) — lower for precision
+  phase3_temperature: 0.2 # Phase 3 (Approve) — lowest for consistency
+  timeout_seconds: 120    # Per-phase inference timeout
+
+# Cloudflare Worker (your deployed API backend)
+cloudflare:
+  worker_url: "https://datenight-api.your-domain.workers.dev"
+
+# Calendar file generation
+calendar:
+  output_dir: "~/.datenight/calendars"  # Where .ics files are saved
+  reminder_minutes: 30                   # Alarm before first event
+
+# Planning behavior
+planning:
+  max_retries: 3           # Full pipeline re-rolls on catastrophic failure
+  max_parse_retries: 3     # JSON parse retries per LLM phase
+  min_quality_score: 7.0   # Phase 2 threshold for auto-approve (0-10)
+  same_day_cutoff: "16:00" # Saturday cutoff for same-day planning (HH:MM)
+
+# Logging
+logging:
+  level: "INFO"            # DEBUG for verbose plan logging
+  file: "logs/datenight.log"  # JSON log file path (directory auto-created)
