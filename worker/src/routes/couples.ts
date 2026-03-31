@@ -54,14 +54,22 @@ coupleRoutes.post("/", async (c) => {
     return c.json({ error: "Missing required fields: id, partner_a, partner_b" }, 400);
   }
 
-  // Verify both partners exist
-  const partnerA = await c.env.DB.prepare("SELECT id FROM partners WHERE id = ?")
-    .bind(body.partner_a).first();
-  if (!partnerA) return c.json({ error: `Partner not found: ${body.partner_a}` }, 404);
+  if (body.partner_a === body.partner_b) {
+    return c.json({ error: "Cannot couple a partner with themselves" }, 400);
+  }
 
-  const partnerB = await c.env.DB.prepare("SELECT id FROM partners WHERE id = ?")
-    .bind(body.partner_b).first();
-  if (!partnerB) return c.json({ error: `Partner not found: ${body.partner_b}` }, 404);
+  // Verify both partners exist in a single query
+  const partners = await c.env.DB.prepare(
+    "SELECT id FROM partners WHERE id IN (?, ?)"
+  ).bind(body.partner_a, body.partner_b).all<{ id: string }>();
+
+  const foundIds = new Set(partners.results.map((r) => r.id));
+  if (!foundIds.has(body.partner_a)) {
+    return c.json({ error: `Partner not found: ${body.partner_a}` }, 404);
+  }
+  if (!foundIds.has(body.partner_b)) {
+    return c.json({ error: `Partner not found: ${body.partner_b}` }, 404);
+  }
 
   const now = new Date().toISOString();
   try {

@@ -82,10 +82,17 @@ profileRoutes.post("/", async (c) => {
     throw e;
   }
 
-  const row = await c.env.DB.prepare("SELECT * FROM partners WHERE id = ?")
-    .bind(body.id)
-    .first<PartnerRow>();
-  return c.json(parsePartnerRow(row!), 201);
+  return c.json({
+    id: body.id,
+    name: body.name,
+    cuisines: body.cuisines,
+    movie_genres: body.movie_genres,
+    activities: body.activities,
+    dietary_restrictions: body.dietary_restrictions || [],
+    dislikes: body.dislikes || [],
+    created_at: now,
+    updated_at: now,
+  }, 201);
 });
 
 profileRoutes.get("/", async (c) => {
@@ -126,10 +133,16 @@ profileRoutes.put("/:id", async (c) => {
 
   if (!result.meta.changes) return c.json({ error: "Profile not found" }, 404);
 
-  const row = await c.env.DB.prepare("SELECT * FROM partners WHERE id = ?")
-    .bind(c.req.param("id"))
-    .first<PartnerRow>();
-  return c.json(parsePartnerRow(row!));
+  return c.json({
+    id: c.req.param("id"),
+    name: body.name,
+    cuisines: body.cuisines,
+    movie_genres: body.movie_genres,
+    activities: body.activities,
+    dietary_restrictions: body.dietary_restrictions || [],
+    dislikes: body.dislikes || [],
+    updated_at: now,
+  });
 });
 
 profileRoutes.delete("/:id", async (c) => {

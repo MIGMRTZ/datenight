@@ -3,14 +3,13 @@
 import uuid
 
 import typer
-from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from datenight.api_client import ApiError, ConflictError, get_client
+from datenight.api_client import ConflictError, get_client
+from datenight.commands._common import console, handle_api_errors
 
 profile_app = typer.Typer(name="profile", help="Manage partner profiles.")
-console = Console()
 
 
 def _prompt_list(label: str, default: str = "") -> list[str]:
@@ -34,115 +33,102 @@ def _display_profile(profile: dict) -> None:  # type: ignore[type-arg]
 
 
 @profile_app.command("create")
+@handle_api_errors
 def create() -> None:
     """Create a new partner profile interactively."""
-    try:
-        client = get_client()
-        name = typer.prompt("Name")
-        cuisines = _prompt_list("Cuisines (comma-separated, ranked)")
-        movie_genres = _prompt_list("Movie genres (comma-separated, ranked)")
-        activities = _prompt_list("Activities (comma-separated, ranked)")
-        dietary_restrictions = _prompt_list(
-            "Dietary restrictions (optional, comma-separated)", default=""
-        )
-        dislikes = _prompt_list("Dislikes (optional, comma-separated)", default="")
+    client = get_client()
+    name = typer.prompt("Name")
+    cuisines = _prompt_list("Cuisines (comma-separated, ranked)")
+    movie_genres = _prompt_list("Movie genres (comma-separated, ranked)")
+    activities = _prompt_list("Activities (comma-separated, ranked)")
+    dietary_restrictions = _prompt_list(
+        "Dietary restrictions (optional, comma-separated)", default=""
+    )
+    dislikes = _prompt_list("Dislikes (optional, comma-separated)", default="")
 
-        if not typer.confirm("Create this profile?", default=True):
-            raise typer.Abort()
+    if not typer.confirm("Create this profile?", default=True):
+        raise typer.Abort()
 
-        profile = client.create_profile(
-            {
-                "id": str(uuid.uuid4()),
-                "name": name,
-                "cuisines": cuisines,
-                "movie_genres": movie_genres,
-                "activities": activities,
-                "dietary_restrictions": dietary_restrictions,
-                "dislikes": dislikes,
-            }
-        )
-        console.print("\n[green]Profile created![/green]")
-        _display_profile(profile)
-    except (ApiError, ConnectionError, TimeoutError) as e:
-        typer.echo(str(e), err=True)
-        raise typer.Exit(1)
+    profile = client.create_profile(
+        {
+            "id": str(uuid.uuid4()),
+            "name": name,
+            "cuisines": cuisines,
+            "movie_genres": movie_genres,
+            "activities": activities,
+            "dietary_restrictions": dietary_restrictions,
+            "dislikes": dislikes,
+        }
+    )
+    console.print("\n[green]Profile created![/green]")
+    _display_profile(profile)
 
 
 @profile_app.command("list")
+@handle_api_errors
 def list_profiles() -> None:
     """List all partner profiles."""
-    try:
-        client = get_client()
-        profiles = client.list_profiles()
-        if not profiles:
-            typer.echo("No profiles found. Run `datenight profile create` to get started.")
-            return
+    client = get_client()
+    profiles = client.list_profiles()
+    if not profiles:
+        typer.echo("No profiles found. Run `datenight profile create` to get started.")
+        return
 
-        table = Table(title="Partner Profiles")
-        table.add_column("ID", style="dim", max_width=12)
-        table.add_column("Name", style="bold")
-        table.add_column("Cuisines")
-        table.add_column("Activities")
+    table = Table(title="Partner Profiles")
+    table.add_column("ID", style="dim", max_width=12)
+    table.add_column("Name", style="bold")
+    table.add_column("Cuisines")
+    table.add_column("Activities")
 
-        for p in profiles:
-            table.add_row(
-                p["id"][:12],
-                p["name"],
-                ", ".join(p.get("cuisines", [])[:3]),
-                ", ".join(p.get("activities", [])[:3]),
-            )
-        console.print(table)
-    except (ApiError, ConnectionError, TimeoutError) as e:
-        typer.echo(str(e), err=True)
-        raise typer.Exit(1)
+    for p in profiles:
+        table.add_row(
+            p["id"][:12],
+            p["name"],
+            ", ".join(p.get("cuisines", [])[:3]),
+            ", ".join(p.get("activities", [])[:3]),
+        )
+    console.print(table)
 
 
 @profile_app.command("show")
+@handle_api_errors
 def show(profile_id: str) -> None:
     """Display a partner's full profile."""
-    try:
-        client = get_client()
-        profile = client.get_profile(profile_id)
-        _display_profile(profile)
-    except (ApiError, ConnectionError, TimeoutError) as e:
-        typer.echo(str(e), err=True)
-        raise typer.Exit(1)
+    client = get_client()
+    profile = client.get_profile(profile_id)
+    _display_profile(profile)
 
 
 @profile_app.command("edit")
+@handle_api_errors
 def edit(profile_id: str) -> None:
     """Update a partner's preferences interactively."""
-    try:
-        client = get_client()
-        current = client.get_profile(profile_id)
+    client = get_client()
+    current = client.get_profile(profile_id)
 
-        name = typer.prompt("Name", default=current["name"])
-        cuisines = _prompt_list("Cuisines", default=", ".join(current.get("cuisines", [])))
-        movie_genres = _prompt_list(
-            "Movie genres", default=", ".join(current.get("movie_genres", []))
-        )
-        activities = _prompt_list("Activities", default=", ".join(current.get("activities", [])))
-        dietary_restrictions = _prompt_list(
-            "Dietary restrictions", default=", ".join(current.get("dietary_restrictions", []))
-        )
-        dislikes = _prompt_list("Dislikes", default=", ".join(current.get("dislikes", [])))
+    name = typer.prompt("Name", default=current["name"])
+    cuisines = _prompt_list("Cuisines", default=", ".join(current.get("cuisines", [])))
+    movie_genres = _prompt_list("Movie genres", default=", ".join(current.get("movie_genres", [])))
+    activities = _prompt_list("Activities", default=", ".join(current.get("activities", [])))
+    dietary_restrictions = _prompt_list(
+        "Dietary restrictions",
+        default=", ".join(current.get("dietary_restrictions", [])),
+    )
+    dislikes = _prompt_list("Dislikes", default=", ".join(current.get("dislikes", [])))
 
-        updated = client.update_profile(
-            profile_id,
-            {
-                "name": name,
-                "cuisines": cuisines,
-                "movie_genres": movie_genres,
-                "activities": activities,
-                "dietary_restrictions": dietary_restrictions,
-                "dislikes": dislikes,
-            },
-        )
-        console.print("\n[green]Profile updated![/green]")
-        _display_profile(updated)
-    except (ApiError, ConnectionError, TimeoutError) as e:
-        typer.echo(str(e), err=True)
-        raise typer.Exit(1)
+    updated = client.update_profile(
+        profile_id,
+        {
+            "name": name,
+            "cuisines": cuisines,
+            "movie_genres": movie_genres,
+            "activities": activities,
+            "dietary_restrictions": dietary_restrictions,
+            "dislikes": dislikes,
+        },
+    )
+    console.print("\n[green]Profile updated![/green]")
+    _display_profile(updated)
 
 
 @profile_app.command("delete")
@@ -158,7 +144,4 @@ def delete(profile_id: str) -> None:
     except ConflictError:
         msg = "Cannot delete — partner is in a couple. Run `datenight couple unlink` first."
         typer.echo(msg, err=True)
-        raise typer.Exit(1)
-    except (ApiError, ConnectionError, TimeoutError) as e:
-        typer.echo(str(e), err=True)
         raise typer.Exit(1)
