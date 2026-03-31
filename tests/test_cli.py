@@ -1,5 +1,7 @@
 """Tests for datenight CLI entry point."""
 
+from datenight import __version__
+from datenight.cli import app
 from typer.testing import CliRunner
 
 runner = CliRunner()
@@ -7,26 +9,20 @@ runner = CliRunner()
 
 def test_version_flag():
     """datenight --version prints version and exits 0."""
-    from datenight.cli import app
-
     result = runner.invoke(app, ["--version"])
     assert result.exit_code == 0
-    assert "datenight 0.1.0" in result.output
+    assert f"datenight {__version__}" in result.output
 
 
 def test_version_short_flag():
     """datenight -V prints version and exits 0."""
-    from datenight.cli import app
-
     result = runner.invoke(app, ["-V"])
     assert result.exit_code == 0
-    assert "datenight 0.1.0" in result.output
+    assert f"datenight {__version__}" in result.output
 
 
 def test_no_args_shows_help():
     """datenight with no args shows help text."""
-    from datenight.cli import app
-
     result = runner.invoke(app, [])
     # Typer/Click returns exit code 0 or 2 for help display
     assert result.exit_code in (0, 2)
@@ -35,8 +31,6 @@ def test_no_args_shows_help():
 
 def test_help_flag():
     """datenight --help shows help text."""
-    from datenight.cli import app
-
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
     assert "--version" in result.output
@@ -45,7 +39,5 @@ def test_help_flag():
 
 def test_unknown_command_errors():
     """datenight nonexistent exits with error."""
-    from datenight.cli import app
-
     result = runner.invoke(app, ["nonexistent"])
     assert result.exit_code != 0

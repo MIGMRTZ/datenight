@@ -11,7 +11,7 @@ Priority (highest to lowest):
 
 import os
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any
 
 import yaml
 from pydantic import BaseModel, Field
@@ -72,10 +72,6 @@ class YamlSettingsSource(PydanticBaseSettingsSource):
         return self._yaml_data
 
 
-# Module-level storage for YAML data to pass into settings_customise_sources
-_yaml_data: dict[str, Any] = {}
-
-
 class DateNightSettings(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix="DATENIGHT__",
@@ -90,21 +86,13 @@ class DateNightSettings(BaseSettings):
     logging: LoggingConfig = LoggingConfig()
     auth_token: str = ""
 
-    @classmethod
-    def settings_customise_sources(
-        cls,
-        settings_cls: type[BaseSettings],
-        init_settings: PydanticBaseSettingsSource,
-        env_settings: PydanticBaseSettingsSource,
-        dotenv_settings: PydanticBaseSettingsSource,
-        file_secret_settings: PydanticBaseSettingsSource,
-    ) -> tuple[PydanticBaseSettingsSource, ...]:
-        # Priority: init > env > yaml > defaults
-        return (
-            init_settings,
-            env_settings,
-            YamlSettingsSource(settings_cls, _yaml_data),
-        )
+
+def _read_yaml(path: Path) -> dict[str, Any]:
+    """Read a YAML file, returning empty dict on missing file."""
+    try:
+        return yaml.safe_load(path.read_text()) or {}
+    except FileNotFoundError:
+        return {}
 
 
 def load_settings(config_path: Path | None = None) -> DateNightSettings:
@@ -117,19 +105,35 @@ def load_settings(config_path: Path | None = None) -> DateNightSettings:
     Returns:
         Fully resolved DateNightSettings instance.
     """
-    global _yaml_data
-    _yaml_data = {}
+    yaml_data: dict[str, Any] = {}
 
     if config_path is not None:
-        if config_path.exists():
-            _yaml_data = yaml.safe_load(config_path.read_text()) or {}
+        yaml_data = _read_yaml(config_path)
     else:
         for candidate in [Path("config.yaml"), Path.home() / ".datenight" / "config.yaml"]:
-            if candidate.exists():
-                _yaml_data = yaml.safe_load(candidate.read_text()) or {}
+            yaml_data = _read_yaml(candidate)
+            if yaml_data:
                 break
 
-    settings = DateNightSettings()
+    # Build a dynamic subclass so YAML data is captured in the closure,
+    # avoiding thread-unsafe module-level globals.
+    class _Settings(DateNightSettings):
+        @classmethod
+        def settings_customise_sources(
+            cls,
+            settings_cls: type[BaseSettings],
+            init_settings: PydanticBaseSettingsSource,
+            env_settings: PydanticBaseSettingsSource,
+            dotenv_settings: PydanticBaseSettingsSource,
+            file_secret_settings: PydanticBaseSettingsSource,
+        ) -> tuple[PydanticBaseSettingsSource, ...]:
+            return (
+                init_settings,
+                env_settings,
+                YamlSettingsSource(settings_cls, yaml_data),
+            )
+
+    settings = _Settings()
 
     # Support DATENIGHT_AUTH_TOKEN (single underscore) as convenience alias
     token = os.environ.get("DATENIGHT_AUTH_TOKEN", "")

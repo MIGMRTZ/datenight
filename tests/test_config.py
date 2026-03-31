@@ -1,6 +1,5 @@
 """Tests for datenight configuration management."""
 
-import os
 from pathlib import Path
 
 import pytest

@@ -106,7 +106,7 @@ def test_log_level_filtering(tmp_path: Path):
     logger.warning("should appear")
 
     content = log_file.read_text().strip()
-    lines = [l for l in content.splitlines() if l.strip()]
+    lines = [line for line in content.splitlines() if line.strip()]
     # Only warning should appear
     assert len(lines) >= 1
     assert all("should be filtered" not in l for l in lines)
