@@ -8,6 +8,9 @@ from pathlib import Path
 
 import structlog
 
+# Not thread-safe — this module assumes single-threaded CLI usage.
+# If parallel test execution (pytest-xdist) is needed, refactor to
+# return the handle or use a context manager pattern.
 _log_file_handle = None
 
 

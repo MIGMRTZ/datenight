@@ -6,13 +6,15 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 ENVIRONMENT = "production"
 
-# D1 binding (database_id filled after `wrangler d1 create datenight`)
+# D1 binding — replace PLACEHOLDER after running: wrangler d1 create datenight
+# IMPORTANT: Deploy will fail if database_id is still "PLACEHOLDER"
 [[d1_databases]]
 binding = "DB"
 database_name = "datenight"
 database_id = "PLACEHOLDER"
 
-# KV binding (id filled after `wrangler kv:namespace create CACHE`)
+# KV binding — replace PLACEHOLDER after running: wrangler kv:namespace create CACHE
+# IMPORTANT: Deploy will fail if id is still "PLACEHOLDER"
 [[kv_namespaces]]
 binding = "CACHE"
 id = "PLACEHOLDER"

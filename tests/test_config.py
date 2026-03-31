@@ -102,3 +102,23 @@ def test_config_yaml_not_found_uses_defaults():
     settings = load_settings(config_path=Path("/nonexistent/config.yaml"))
     assert settings.location.zip == "75165"
     assert settings.ollama.model == "llama3.1:8b"
+
+
+def test_malformed_yaml_raises_system_exit(tmp_path: Path):
+    """Malformed YAML exits with a user-friendly error."""
+    from datenight.config import load_settings
+
+    bad_yaml = tmp_path / "config.yaml"
+    bad_yaml.write_text(": bad\n  invalid: yaml\n  !")
+
+    with pytest.raises(SystemExit, match="Invalid YAML"):
+        load_settings(config_path=bad_yaml)
+
+
+def test_output_dir_tilde_expanded():
+    """CalendarConfig.output_dir expands ~ to home directory."""
+    from datenight.config import CalendarConfig
+
+    config = CalendarConfig(output_dir="~/test/path")
+    assert "~" not in config.output_dir
+    assert config.output_dir.endswith("/test/path")

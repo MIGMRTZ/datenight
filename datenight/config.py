@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
 
 
@@ -41,6 +41,11 @@ class CloudflareConfig(BaseModel):
 class CalendarConfig(BaseModel):
     output_dir: str = "~/.datenight/calendars"
     reminder_minutes: int = 30
+
+    @field_validator("output_dir")
+    @classmethod
+    def expand_output_dir(cls, v: str) -> str:
+        return str(Path(v).expanduser())
 
 
 class PlanningConfig(BaseModel):
@@ -88,11 +93,17 @@ class DateNightSettings(BaseSettings):
 
 
 def _read_yaml(path: Path) -> dict[str, Any]:
-    """Read a YAML file, returning empty dict on missing file."""
+    """Read a YAML file, returning empty dict on missing file.
+
+    Raises:
+        SystemExit: If the YAML file exists but contains invalid syntax.
+    """
     try:
         return yaml.safe_load(path.read_text()) or {}
     except FileNotFoundError:
         return {}
+    except yaml.YAMLError as e:
+        raise SystemExit(f"Invalid YAML in {path}: {e}") from e
 
 
 def load_settings(config_path: Path | None = None) -> DateNightSettings:

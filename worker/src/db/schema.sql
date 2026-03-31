@@ -7,6 +7,9 @@
 --   - Foreign keys require PRAGMA foreign_keys = ON per-connection
 --   - UNIQUE on partner_a/partner_b ensures each partner belongs to one couple only
 
+-- ID columns use UUIDv4 format (36 chars, e.g. "550e8400-e29b-41d4-a716-446655440000")
+-- generated client-side. No CHECK constraint enforced — validated in application layer.
+
 CREATE TABLE IF NOT EXISTS partners (
     id                   TEXT PRIMARY KEY,
     name                 TEXT NOT NULL,
