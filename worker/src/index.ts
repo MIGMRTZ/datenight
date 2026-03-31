@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { authMiddleware } from "./middleware/auth";
 import type { Env } from "./types";
 
 const app = new Hono<{ Bindings: Env }>();
@@ -10,5 +11,15 @@ app.get("/health", (c) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+// Protected API routes (auth required)
+const api = new Hono<{ Bindings: Env }>();
+api.use("*", authMiddleware);
+
+api.get("/ping", (c) => {
+  return c.json({ message: "authenticated" });
+});
+
+app.route("/api", api);
 
 export default app;
