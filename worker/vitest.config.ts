@@ -9,11 +9,6 @@ export default defineWorkersConfig({
           bindings: {
             AUTH_TOKEN: "test-auth-token",
           },
-          d1Databases: {
-            DB: {
-              migrationsPath: "./migrations",
-            },
-          },
         },
       },
     },

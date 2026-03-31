@@ -12,6 +12,7 @@ ENVIRONMENT = "production"
 binding = "DB"
 database_name = "datenight"
 database_id = "PLACEHOLDER"
+migrations_dir = "migrations"
 
 # KV binding — replace PLACEHOLDER after running: wrangler kv:namespace create CACHE
 # IMPORTANT: Deploy will fail if id is still "PLACEHOLDER"
