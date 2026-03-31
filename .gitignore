@@ -1,1 +1,33 @@
+# OS
 .DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+*.egg
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Logs
+logs/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Node (worker)
+node_modules/
+.wrangler/
+
+# Config (user-specific)
+config.yaml
