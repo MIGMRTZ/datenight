@@ -3,6 +3,7 @@
 import json
 from pathlib import Path
 
+import pytest
 import structlog
 
 
@@ -109,5 +110,13 @@ def test_log_level_filtering(tmp_path: Path):
     lines = [line for line in content.splitlines() if line.strip()]
     # Only warning should appear
     assert len(lines) >= 1
-    assert all("should be filtered" not in l for l in lines)
-    assert any("should appear" in l for l in lines)
+    assert all("should be filtered" not in line for line in lines)
+    assert any("should appear" in line for line in lines)
+
+
+def test_setup_logging_invalid_level_raises(tmp_path: Path):
+    """Invalid log level raises ValueError."""
+    from datenight.logging import setup_logging
+
+    with pytest.raises(ValueError, match="Invalid log level"):
+        setup_logging(level="BOGUS", log_file=str(tmp_path / "test.log"))

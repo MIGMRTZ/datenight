@@ -1,7 +1,7 @@
 """Configuration management for Date Night Autopilot.
 
 Reads settings from config.yaml with environment variable overrides.
-Auth token is env-only (DATENIGHT_AUTH_TOKEN), never stored in config files.
+Auth token should be set via DATENIGHT_AUTH_TOKEN env var (not stored in config files).
 
 Priority (highest to lowest):
 1. Environment variables (DATENIGHT__LOCATION__ZIP, etc.)
@@ -46,7 +46,7 @@ class CalendarConfig(BaseModel):
 class PlanningConfig(BaseModel):
     max_retries: int = 3
     max_parse_retries: int = 3
-    min_quality_score: float = Field(default=7.0, ge=0.0)
+    min_quality_score: float = Field(default=7.0, ge=0.0, le=10.0)
     same_day_cutoff: str = "16:00"
 
 

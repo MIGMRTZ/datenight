@@ -47,7 +47,7 @@ def setup_logging(level: str = "INFO", log_file: str = "logs/datenight.log") -> 
         wrapper_class=structlog.make_filtering_bound_logger(log_level),
         context_class=dict,
         logger_factory=structlog.WriteLoggerFactory(file=_log_file_handle),
-        cache_logger_on_first_use=True,
+        cache_logger_on_first_use=False,
     )
 
 

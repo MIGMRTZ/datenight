@@ -21,14 +21,14 @@ CREATE TABLE IF NOT EXISTS partners (
 
 CREATE TABLE IF NOT EXISTS couples (
     id          TEXT PRIMARY KEY,
-    partner_a   TEXT NOT NULL REFERENCES partners(id) UNIQUE,
-    partner_b   TEXT NOT NULL REFERENCES partners(id) UNIQUE,
+    partner_a   TEXT NOT NULL REFERENCES partners(id) ON DELETE RESTRICT UNIQUE,
+    partner_b   TEXT NOT NULL REFERENCES partners(id) ON DELETE RESTRICT UNIQUE,
     created_at  TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS date_history (
     id                TEXT PRIMARY KEY,
-    couple_id         TEXT NOT NULL REFERENCES couples(id),
+    couple_id         TEXT NOT NULL REFERENCES couples(id) ON DELETE CASCADE,
     date_planned      TEXT NOT NULL,
     date_type         TEXT NOT NULL,
     venue_name        TEXT,
