@@ -3,6 +3,7 @@
 import typer
 
 from datenight import __version__
+from datenight.commands.profile import profile_app
 
 app = typer.Typer(
     name="datenight",
@@ -51,3 +52,6 @@ def main(
     """Date Night Autopilot — plan date nights from the terminal."""
     if ctx.invoked_subcommand is not None:
         _ensure_init()
+
+
+app.add_typer(profile_app)
