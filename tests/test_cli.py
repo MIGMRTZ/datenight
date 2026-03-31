@@ -1,8 +1,9 @@
 """Tests for datenight CLI entry point."""
 
+from typer.testing import CliRunner
+
 from datenight import __version__
 from datenight.cli import app
-from typer.testing import CliRunner
 
 runner = CliRunner()
 

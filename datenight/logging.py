@@ -57,5 +57,5 @@ def setup_logging(level: str = "INFO", log_file: str = "logs/datenight.log") -> 
 def get_logger(name: str | None = None) -> structlog.BoundLogger:
     """Get a named structlog logger."""
     if name:
-        return structlog.get_logger(name)
-    return structlog.get_logger()
+        return structlog.get_logger(name)  # type: ignore[no-any-return]
+    return structlog.get_logger()  # type: ignore[no-any-return]
