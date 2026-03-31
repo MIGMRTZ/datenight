@@ -1,0 +1,18 @@
+name = "datenight-api"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ENVIRONMENT = "production"
+
+# D1 binding (database_id filled after `wrangler d1 create datenight`)
+[[d1_databases]]
+binding = "DB"
+database_name = "datenight"
+database_id = "PLACEHOLDER"
+
+# KV binding (id filled after `wrangler kv:namespace create CACHE`)
+[[kv_namespaces]]
+binding = "CACHE"
+id = "PLACEHOLDER"
