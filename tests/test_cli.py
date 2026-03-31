@@ -34,8 +34,9 @@ def test_help_flag():
     """datenight --help shows help text."""
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
-    assert "--version" in result.output
-    assert "--help" in result.output
+    # Rich/Typer may insert ANSI escape codes around "--", so match keywords
+    assert "version" in result.output
+    assert "help" in result.output
 
 
 def test_unknown_command_errors():
