@@ -3,6 +3,7 @@
 import typer
 
 from datenight import __version__
+from datenight.commands.couple import couple_app
 from datenight.commands.profile import profile_app
 
 app = typer.Typer(
@@ -55,3 +56,4 @@ def main(
 
 
 app.add_typer(profile_app)
+app.add_typer(couple_app)
