@@ -4,6 +4,7 @@ import { foreignKeysMiddleware } from "./middleware/db";
 import { coupleRoutes } from "./routes/couples";
 import { movieRoutes } from "./routes/movies";
 import { profileRoutes } from "./routes/profiles";
+import { restaurantRoutes } from "./routes/restaurants";
 import type { Env } from "./types";
 
 const app = new Hono<{ Bindings: Env }>();
@@ -28,6 +29,7 @@ api.get("/ping", (c) => {
 api.route("/profiles", profileRoutes);
 api.route("/couples", coupleRoutes);
 api.route("/movies", movieRoutes);
+api.route("/restaurants", restaurantRoutes);
 
 app.route("/api", api);
 
