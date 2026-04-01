@@ -3,4 +3,7 @@ export interface Env {
   CACHE: KVNamespace;
   AUTH_TOKEN: string;
   ENVIRONMENT: "production" | "staging" | "development";
+  YELP_API_KEY: string;
+  TMDB_API_KEY: string;
+  EVENTBRITE_API_KEY: string;
 }
