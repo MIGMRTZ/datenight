@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import type { Env } from "../types";
 import { assignVenueIds } from "../venues/ids";
 import { withCache } from "../venues/cache";
+import { emptyVenueResponse } from "../venues/response";
 import type { MovieVenue, VenueResponse } from "../venues/types";
 
 // TMDb genre IDs → names (stable list, avoids extra API call)
@@ -47,7 +48,6 @@ function transformTmdbMovie(movie: TmdbMovie): Omit<MovieVenue, "id"> {
 
   return {
     name: movie.title,
-    title: movie.title,
     genre,
     rating: movie.vote_average,
     synopsis: movie.overview,
@@ -92,12 +92,8 @@ movieRoutes.get("/", async (c) => {
       radius_expanded: false,
     };
     return c.json(response);
-  } catch {
-    return c.json({
-      venues: [],
-      radius_miles: 0,
-      radius_expanded: false,
-      warnings: ["Movie data temporarily unavailable"],
-    });
+  } catch (err) {
+    console.error("movies route error:", err);
+    return c.json(emptyVenueResponse(0, "Movie data temporarily unavailable"));
   }
 });

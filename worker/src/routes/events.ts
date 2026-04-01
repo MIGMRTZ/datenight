@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import type { Env } from "../types";
 import { assignVenueIds } from "../venues/ids";
 import { withCache } from "../venues/cache";
+import { emptyVenueResponse } from "../venues/response";
 import { fetchYelpBusinesses } from "../venues/yelp";
 import type { EventVenue, VenueResponse } from "../venues/types";
 
@@ -82,13 +83,10 @@ eventRoutes.get("/", async (c) => {
     return c.json({ error: "Missing required parameter: zip" }, 400);
   }
 
-  const today = new Date().toISOString().split("T")[0];
-  const dateFrom = c.req.query("date_from") || today;
-  const dateTo = c.req.query("date_to") || (() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 7);
-    return d.toISOString().split("T")[0];
-  })();
+  const now = Date.now();
+  const dateFrom = c.req.query("date_from") || new Date(now).toISOString().split("T")[0];
+  const dateTo = c.req.query("date_to") ||
+    new Date(now + 7 * 86_400_000).toISOString().split("T")[0];
 
   const cacheKey = `events:${zip}:${dateFrom}:${dateTo}`;
 
@@ -98,13 +96,14 @@ eventRoutes.get("/", async (c) => {
       cacheKey,
       21600, // 6 hours
       async () => {
-        // Try Eventbrite first, seamless Yelp fallback
-        try {
-          return await fetchFromEventbrite(c.env.EVENTBRITE_API_KEY, zip, dateFrom, dateTo);
-        } catch {
-          // Seamless fallback — no warning for Eventbrite failure
-          return await fetchFromYelpFallback(c.env.YELP_API_KEY, zip);
-        }
+        // Fire both in parallel, prefer Eventbrite when available
+        const [eb, yelp] = await Promise.allSettled([
+          fetchFromEventbrite(c.env.EVENTBRITE_API_KEY, zip, dateFrom, dateTo),
+          fetchFromYelpFallback(c.env.YELP_API_KEY, zip),
+        ]);
+        if (eb.status === "fulfilled") return eb.value;
+        if (yelp.status === "fulfilled") return yelp.value;
+        throw new Error("Both Eventbrite and Yelp failed");
       }
     );
 
@@ -115,12 +114,8 @@ eventRoutes.get("/", async (c) => {
       radius_expanded: false,
     };
     return c.json(response);
-  } catch {
-    return c.json({
-      venues: [],
-      radius_miles: 0,
-      radius_expanded: false,
-      warnings: ["Event data temporarily unavailable"],
-    });
+  } catch (err) {
+    console.error("events route error:", err);
+    return c.json(emptyVenueResponse(0, "Event data temporarily unavailable"));
   }
 });

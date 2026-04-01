@@ -4,7 +4,6 @@ export interface BaseVenue {
 }
 
 export interface MovieVenue extends BaseVenue {
-  title: string;
   genre: string;
   rating: number;
   synopsis: string;
