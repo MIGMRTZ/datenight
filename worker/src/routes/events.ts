@@ -46,9 +46,10 @@ async function fetchFromEventbrite(
   url.searchParams.set("location.address", zip);
   url.searchParams.set("start_date.range_start", `${dateFrom}T00:00:00`);
   url.searchParams.set("start_date.range_end", `${dateTo}T23:59:59`);
-  url.searchParams.set("token", apiKey);
 
-  const resp = await fetch(url.toString());
+  const resp = await fetch(url.toString(), {
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
   if (!resp.ok) throw new Error(`Eventbrite API error: ${resp.status}`);
 
   const data = (await resp.json()) as EventbriteResponse;
@@ -96,14 +97,13 @@ eventRoutes.get("/", async (c) => {
       cacheKey,
       21600, // 6 hours
       async () => {
-        // Fire both in parallel, prefer Eventbrite when available
-        const [eb, yelp] = await Promise.allSettled([
-          fetchFromEventbrite(c.env.EVENTBRITE_API_KEY, zip, dateFrom, dateTo),
-          fetchFromYelpFallback(c.env.YELP_API_KEY, zip),
-        ]);
-        if (eb.status === "fulfilled") return eb.value;
-        if (yelp.status === "fulfilled") return yelp.value;
-        throw new Error("Both Eventbrite and Yelp failed");
+        // Try Eventbrite first; on failure, fall back to Yelp (no warning)
+        try {
+          return await fetchFromEventbrite(c.env.EVENTBRITE_API_KEY, zip, dateFrom, dateTo);
+        } catch (ebErr) {
+          console.error("Eventbrite failed, falling back to Yelp:", ebErr);
+          return await fetchFromYelpFallback(c.env.YELP_API_KEY, zip);
+        }
       }
     );
 

@@ -49,20 +49,23 @@ describe("withCache", () => {
     expect(fetchFn).not.toHaveBeenCalled();
   });
 
-  it("serves stale cache when fetchFn throws", async () => {
-    await env.CACHE.put("test-key", JSON.stringify({ data: "stale" }));
+  it("serves stale backup when fetchFn throws and primary cache is empty", async () => {
+    // Seed stale:{key} but NOT the primary key — simulates expired primary
+    await env.CACHE.put("stale:test-key", JSON.stringify({ data: "stale-backup" }));
     const fetchFn = vi.fn().mockRejectedValue(new Error("API down"));
 
-    // Delete and re-put to simulate stale (KV in test won't actually expire)
-    // The key still exists, so withCache should try it as fallback
     const result = await withCache(env.CACHE, "test-key", 3600, fetchFn);
-    expect(result.data).toEqual({ data: "stale" });
+    expect(result.data).toEqual({ data: "stale-backup" });
     expect(result.cached).toBe(true);
+    expect(fetchFn).toHaveBeenCalledOnce();
   });
 
   it("rethrows when fetchFn fails and no cache exists", async () => {
     const fetchFn = vi.fn().mockRejectedValue(new Error("API down"));
-    await expect(withCache(env.CACHE, "no-cache-key", 3600, fetchFn)).rejects.toThrow("API down");
+    // Neither primary nor stale:{key} exists
+    await expect(
+      withCache(env.CACHE, "no-cache-key", 3600, fetchFn)
+    ).rejects.toThrow("API down");
   });
 });
 

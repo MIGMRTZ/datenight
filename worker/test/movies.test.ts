@@ -49,7 +49,7 @@ describe("GET /api/movies", () => {
     expect(body.venues).toHaveLength(2);
     expect(body.venues[0].id).toBe("M1");
     expect(body.venues[0].name).toBe("The Great Adventure");
-    expect(body.venues[0].genre).toBe("Action");
+    expect(body.venues[0].genre).toBe("Action, Adventure");
     expect(body.venues[0].tmdb_id).toBe(123);
     expect(body.venues[1].id).toBe("M2");
     expect(body.radius_expanded).toBe(false);

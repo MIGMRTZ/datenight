@@ -21,10 +21,10 @@ export async function withCache<T>(
 
   try {
     const data = await fetchFn();
-    // Store fresh + long-lived stale backup
+    const serialized = JSON.stringify(data);
     await Promise.all([
-      kv.put(key, JSON.stringify(data), { expirationTtl: ttlSeconds }),
-      kv.put(`stale:${key}`, JSON.stringify(data), { expirationTtl: STALE_TTL }),
+      kv.put(key, serialized, { expirationTtl: ttlSeconds }),
+      kv.put(`stale:${key}`, serialized, { expirationTtl: STALE_TTL }),
     ]);
     return { data, cached: false };
   } catch (error) {

@@ -75,8 +75,10 @@ movieRoutes.get("/", async (c) => {
       cacheKey,
       3600, // 1 hour TTL
       async () => {
-        const url = `https://api.themoviedb.org/3/movie/now_playing?api_key=${c.env.TMDB_API_KEY}&region=US&page=1`;
-        const resp = await fetch(url);
+        const url = "https://api.themoviedb.org/3/movie/now_playing?region=US&page=1";
+        const resp = await fetch(url, {
+          headers: { Authorization: `Bearer ${c.env.TMDB_API_KEY}` },
+        });
         if (!resp.ok) {
           throw new Error(`TMDb API error: ${resp.status}`);
         }
