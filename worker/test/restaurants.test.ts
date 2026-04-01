@@ -65,10 +65,10 @@ describe("GET /api/restaurants", () => {
   it("triggers sparse expansion when < 3 results", async () => {
     const sparse = { businesses: [YELP_RESPONSE.businesses[0]] };
     // 3 calls: initial 10mi, expansion 25mi, expansion 40mi
-    fetchMock.get("https://api.yelp.com")
-      .intercept({ path: /\/v3\/businesses\/search/ }).reply(200, sparse)
-      .intercept({ path: /\/v3\/businesses\/search/ }).reply(200, sparse)
-      .intercept({ path: /\/v3\/businesses\/search/ }).reply(200, sparse);
+    const pool = fetchMock.get("https://api.yelp.com");
+    pool.intercept({ path: /\/v3\/businesses\/search/ }).reply(200, sparse);
+    pool.intercept({ path: /\/v3\/businesses\/search/ }).reply(200, sparse);
+    pool.intercept({ path: /\/v3\/businesses\/search/ }).reply(200, sparse);
 
     const res = await authFetch("/api/restaurants?zip=30003&radius=10");
     expect(res.status).toBe(200);
