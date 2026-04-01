@@ -34,5 +34,29 @@
   "T1.9": {
     "last_cli_update": "2026-03-31T16:15:14.738915",
     "last_status": "done"
+  },
+  "T2.1": {
+    "last_cli_update": "2026-03-31T17:18:34.601914",
+    "last_status": "done"
+  },
+  "T2.2": {
+    "last_cli_update": "2026-03-31T17:21:59.967538",
+    "last_status": "done"
+  },
+  "T2.3": {
+    "last_cli_update": "2026-03-31T17:25:00.931392",
+    "last_status": "done"
+  },
+  "T2.4": {
+    "last_cli_update": "2026-03-31T17:28:53.835775",
+    "last_status": "done"
+  },
+  "T2.5": {
+    "last_cli_update": "2026-03-31T17:31:07.697873",
+    "last_status": "done"
+  },
+  "T2.6": {
+    "last_cli_update": "2026-03-31T17:32:48.307677",
+    "last_status": "done"
   }
 }
