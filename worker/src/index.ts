@@ -3,6 +3,7 @@ import { authMiddleware } from "./middleware/auth";
 import { foreignKeysMiddleware } from "./middleware/db";
 import { activityRoutes } from "./routes/activities";
 import { coupleRoutes } from "./routes/couples";
+import { eventRoutes } from "./routes/events";
 import { movieRoutes } from "./routes/movies";
 import { profileRoutes } from "./routes/profiles";
 import { restaurantRoutes } from "./routes/restaurants";
@@ -32,6 +33,7 @@ api.route("/couples", coupleRoutes);
 api.route("/movies", movieRoutes);
 api.route("/restaurants", restaurantRoutes);
 api.route("/activities", activityRoutes);
+api.route("/events", eventRoutes);
 
 app.route("/api", api);
 
