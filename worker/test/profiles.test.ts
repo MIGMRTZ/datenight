@@ -1,9 +1,14 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import { env } from "cloudflare:test";
 import { applyMigrations, authPost, authFetch, authPut, authDelete } from "./helpers";
 
 beforeAll(async () => {
   await applyMigrations();
+});
+
+beforeEach(async () => {
+  await env.DB.exec("DELETE FROM couples");
+  await env.DB.exec("DELETE FROM partners");
 });
 
 const validProfile = {
@@ -33,6 +38,7 @@ describe("POST /api/profiles", () => {
   });
 
   it("returns 409 for duplicate id", async () => {
+    await authPost("/api/profiles", validProfile);
     const res = await authPost("/api/profiles", validProfile);
     expect(res.status).toBe(409);
   });
@@ -40,18 +46,15 @@ describe("POST /api/profiles", () => {
 
 describe("GET /api/profiles", () => {
   it("returns all profiles with parsed arrays", async () => {
+    await authPost("/api/profiles", validProfile);
     const res = await authFetch("/api/profiles");
     expect(res.status).toBe(200);
     const body = await res.json<{ profiles: Array<{ name: string; cuisines: string[] }> }>();
-    expect(body.profiles.length).toBeGreaterThanOrEqual(1);
-    const alex = body.profiles.find((p) => p.name === "Alex");
-    expect(alex).toBeDefined();
-    expect(alex!.cuisines).toEqual(["Italian", "Mexican", "Thai"]);
+    expect(body.profiles.length).toBe(1);
+    expect(body.profiles[0].cuisines).toEqual(["Italian", "Mexican", "Thai"]);
   });
 
   it("returns empty array when no profiles exist", async () => {
-    // Clean up first
-    await env.DB.prepare("DELETE FROM partners").run();
     const res = await authFetch("/api/profiles");
     expect(res.status).toBe(200);
     const body = await res.json<{ profiles: unknown[] }>();
@@ -60,15 +63,12 @@ describe("GET /api/profiles", () => {
 });
 
 describe("GET /api/profiles/:id", () => {
-  beforeAll(async () => {
-    await authPost("/api/profiles", { ...validProfile, id: "prof-get-1" });
-  });
-
   it("returns profile by id", async () => {
-    const res = await authFetch("/api/profiles/prof-get-1");
+    await authPost("/api/profiles", validProfile);
+    const res = await authFetch("/api/profiles/prof-001");
     expect(res.status).toBe(200);
     const body = await res.json<{ id: string; name: string }>();
-    expect(body.id).toBe("prof-get-1");
+    expect(body.id).toBe("prof-001");
   });
 
   it("returns 404 for unknown id", async () => {
@@ -78,12 +78,9 @@ describe("GET /api/profiles/:id", () => {
 });
 
 describe("PUT /api/profiles/:id", () => {
-  beforeAll(async () => {
-    await authPost("/api/profiles", { ...validProfile, id: "prof-put-1" });
-  });
-
   it("updates profile and bumps updated_at", async () => {
-    const res = await authPut("/api/profiles/prof-put-1", {
+    await authPost("/api/profiles", validProfile);
+    const res = await authPut("/api/profiles/prof-001", {
       name: "Alex Updated",
       cuisines: ["Japanese"],
       movie_genres: ["Sci-Fi"],
@@ -108,8 +105,8 @@ describe("PUT /api/profiles/:id", () => {
 
 describe("DELETE /api/profiles/:id", () => {
   it("removes profile and returns 204", async () => {
-    await authPost("/api/profiles", { ...validProfile, id: "prof-del-1" });
-    const res = await authDelete("/api/profiles/prof-del-1");
+    await authPost("/api/profiles", validProfile);
+    const res = await authDelete("/api/profiles/prof-001");
     expect(res.status).toBe(204);
   });
 
@@ -121,7 +118,6 @@ describe("DELETE /api/profiles/:id", () => {
   it("returns 409 when partner is in a couple", async () => {
     await authPost("/api/profiles", { ...validProfile, id: "prof-coupled-a" });
     await authPost("/api/profiles", { ...validProfile, id: "prof-coupled-b", name: "Jordan" });
-    // Create couple directly in DB since couple routes don't exist yet
     await env.DB.prepare(
       "INSERT INTO couples (id, partner_a, partner_b, created_at) VALUES (?, ?, ?, ?)"
     ).bind("couple-1", "prof-coupled-a", "prof-coupled-b", new Date().toISOString()).run();
