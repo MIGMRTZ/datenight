@@ -52,9 +52,11 @@ describe("GET /api/activities", () => {
   });
 
   it("triggers sparse expansion when < 3 results", async () => {
+    const sparse = { businesses: [YELP_ACTIVITIES.businesses[0]] };
     fetchMock.get("https://api.yelp.com")
-      .intercept({ path: /\/v3\/businesses\/search/ })
-      .reply(200, { businesses: [YELP_ACTIVITIES.businesses[0]] }).persist();
+      .intercept({ path: /\/v3\/businesses\/search/ }).reply(200, sparse)
+      .intercept({ path: /\/v3\/businesses\/search/ }).reply(200, sparse)
+      .intercept({ path: /\/v3\/businesses\/search/ }).reply(200, sparse);
 
     const res = await authFetch("/api/activities?zip=30003");
     expect(res.status).toBe(200);

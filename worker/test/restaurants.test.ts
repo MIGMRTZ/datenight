@@ -28,8 +28,14 @@ const YELP_RESPONSE = {
   ],
 };
 
-beforeEach(() => { fetchMock.activate(); fetchMock.disableNetConnect(); });
-afterEach(() => { fetchMock.deactivate(); });
+beforeEach(() => {
+  fetchMock.activate();
+  fetchMock.disableNetConnect();
+});
+
+afterEach(() => {
+  fetchMock.deactivate();
+});
 
 describe("GET /api/restaurants", () => {
   it("returns restaurants with R# IDs", async () => {
@@ -57,9 +63,12 @@ describe("GET /api/restaurants", () => {
   });
 
   it("triggers sparse expansion when < 3 results", async () => {
+    const sparse = { businesses: [YELP_RESPONSE.businesses[0]] };
+    // 3 calls: initial 10mi, expansion 25mi, expansion 40mi
     fetchMock.get("https://api.yelp.com")
-      .intercept({ path: /\/v3\/businesses\/search/ })
-      .reply(200, { businesses: [YELP_RESPONSE.businesses[0]] }).persist();
+      .intercept({ path: /\/v3\/businesses\/search/ }).reply(200, sparse)
+      .intercept({ path: /\/v3\/businesses\/search/ }).reply(200, sparse)
+      .intercept({ path: /\/v3\/businesses\/search/ }).reply(200, sparse);
 
     const res = await authFetch("/api/restaurants?zip=30003&radius=10");
     expect(res.status).toBe(200);
