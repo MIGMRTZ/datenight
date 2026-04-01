@@ -5,7 +5,6 @@ import { withCache } from "./cache";
 import { withSparseExpansion } from "./sparse";
 import { fetchYelpBusinesses, type YelpBusiness } from "./yelp";
 import { emptyVenueResponse, parseRadius } from "./response";
-import type { VenueResponse } from "./types";
 
 interface YelpRouteConfig<T> {
   cachePrefix: string;
@@ -43,12 +42,11 @@ export function createYelpRoute<T>(config: YelpRouteConfig<T>) {
       if (cached !== null) {
         const data = JSON.parse(cached) as Omit<T, "id">[];
         const venues = assignVenueIds(config.idPrefix, data);
-        const response: VenueResponse<T & { id: string }> = {
+        return c.json({
           venues,
           radius_miles: initialRadius,
           radius_expanded: false,
-        };
-        return c.json(response);
+        });
       }
 
       // Cache miss — fetch with sparse expansion
@@ -73,12 +71,11 @@ export function createYelpRoute<T>(config: YelpRouteConfig<T>) {
       ]);
 
       const venues = assignVenueIds(config.idPrefix, result.venues);
-      const response: VenueResponse<T & { id: string }> = {
+      return c.json({
         venues,
         radius_miles: result.radius_miles,
         radius_expanded: result.radius_expanded,
-      };
-      return c.json(response);
+      });
     } catch (err) {
       console.error(`${config.cachePrefix} route error:`, err);
       return c.json(emptyVenueResponse(initialRadius, config.warningMessage));
