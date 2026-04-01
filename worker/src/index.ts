@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { authMiddleware } from "./middleware/auth";
 import { foreignKeysMiddleware } from "./middleware/db";
 import { coupleRoutes } from "./routes/couples";
+import { movieRoutes } from "./routes/movies";
 import { profileRoutes } from "./routes/profiles";
 import type { Env } from "./types";
 
@@ -26,6 +27,7 @@ api.get("/ping", (c) => {
 
 api.route("/profiles", profileRoutes);
 api.route("/couples", coupleRoutes);
+api.route("/movies", movieRoutes);
 
 app.route("/api", api);
 
