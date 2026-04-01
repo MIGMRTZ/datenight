@@ -1,103 +1,89 @@
 # Current State
 
-> Last updated: 2026-03-31
+> Last updated: 2026-04-01
 
 ## Active Plan
 
-**Plan:** plan-2026-03-sprint2-profiles-couples
+**Plan:** plan-2026-04-sprint3-venue-discovery
 **Status:** Complete
-**Current Sprint:** Sprint 2 — Profiles, Couples & API Client
+**Current Sprint:** Sprint 3 — Venue Discovery & Caching
 
 ## Current Focus
 
-Sprint 2 complete — all 6 tasks done. Ready for review/merge.
+Sprint 3 complete — all 5 tasks done. Ready for review/merge.
 
 ## Task Status
 
-### Sprint 2 — Profiles, Couples & API Client
+### Sprint 3 — Venue Discovery & Caching
 
 | Task | Title | Priority | Complexity | Status | Depends On |
 |------|-------|----------|------------|--------|------------|
-| T2.1 | Profile Worker Routes | P0 | 40 | ✓ done | — |
-| T2.2 | Couple Worker Routes | P0 | 35 | ✓ done | T2.1 |
-| T2.3 | Python API Client | P0 | 35 | ✓ done | — |
-| T2.4 | CLI Profile Commands | P0 | 45 | ✓ done | T2.3 |
-| T2.5 | CLI Couple Commands | P0 | 30 | ✓ done | T2.3, T2.4 |
-| T2.6 | Integration Tests | P1 | 25 | ✓ done | all |
+| T3.1 | Shared Venue Utilities + Env Update | P0 | 40 | ✓ done | — |
+| T3.2 | Movies Route (TMDb) | P1 | 35 | ✓ done | T3.1 |
+| T3.3 | Restaurants Route (Yelp) | P1 | 40 | ✓ done | T3.1 |
+| T3.4 | Activities Route (Yelp) | P1 | 35 | ✓ done | T3.1 |
+| T3.5 | Events Route (Eventbrite) | P1 | 35 | ✓ done | T3.1 |
 
 ### Execution Order
 
-**Phase 1 (parallel):** T2.1, T2.3
-**Phase 2 (parallel):** T2.2 (after T2.1), T2.4 (after T2.3)
-**Phase 3:** T2.5 (after T2.2 + T2.4)
-**Phase 4:** T2.6 (after all)
+**T3.1 first**, then T3.2–T3.5 can run in parallel.
 
 ### Previous Sprints
 
-Sprint 1 — Foundation & Infrastructure: **9/9 tasks done** (merged via PR #1)
+- Sprint 1 — Foundation & Infrastructure: **9/9 done** (PR #1)
+- Sprint 2 — Profiles, Couples & API Client: **6/6 done** (PR #2)
 
 ## What Was Just Done
 
-- **T2.6 done** (auto-updated by hook)
+- **T3.5 done** (auto-updated by hook)
 
-### Session: 2026-03-31 - T2.6 Integration Tests + Sprint 2 Complete
+### Session: 2026-04-01 - T3.5 Events Route + Sprint 3 Complete
 
-- Created `tests/test_integration.py` — full flow E2E test with respx
-- **Sprint 2 complete: 6/6 tasks done, 55 Python tests, 90% coverage**
+- Created `worker/src/routes/events.ts` — Eventbrite + Yelp fallback, E# IDs, 6h cache
+- Created `worker/test/events.test.ts` — 6 tests
+- **Sprint 3 complete: 5/5 tasks done, 32 new Worker tests, 55 Python tests unchanged**
 
-- **T2.5 done** (auto-updated by hook)
+- **T3.4 done** (auto-updated by hook)
 
-### Session: 2026-03-31 - T2.5 CLI Couple Commands
+### Session: 2026-04-01 - T3.4 Activities Route
 
-- Created `datenight/commands/couple.py` — create/show/unlink
-- Created `tests/test_couple_commands.py` — 6 tests
-- Registered via `app.add_typer(couple_app)` in cli.py
-- 54/54 tests, 90% coverage
+- Created `worker/src/routes/activities.ts` — reuses fetchYelpBusinesses, A# IDs
+- Created `worker/test/activities.test.ts` — 5 tests
 
-- **T2.4 done** (auto-updated by hook)
+- **T3.3 done** (auto-updated by hook)
 
-### Session: 2026-03-31 - T2.4 CLI Profile Commands
+### Session: 2026-04-01 - T3.3 Restaurants Route
 
-- Created `datenight/commands/profile.py` — 5 commands (create/list/show/edit/delete)
-- Created `tests/test_profile_commands.py` — 8 tests
-- Registered via `app.add_typer(profile_app)` in cli.py
-- 48/48 tests, 92% coverage
+- Created `worker/src/routes/restaurants.ts` — Yelp proxy, R# IDs, sparse expansion
+- Created `worker/src/venues/yelp.ts` — shared fetchYelpBusinesses helper
+- Created `worker/test/restaurants.test.ts` — 7 tests with fetchMock
 
-- **T2.3 done** (auto-updated by hook)
+- **T3.2 done** (auto-updated by hook)
 
-### Session: 2026-03-31 - T2.3 Python API Client
+### Session: 2026-04-01 - T3.2 Movies Route
 
-- Created `datenight/api_client.py` — DateNightClient with 9 CRUD methods + error hierarchy
-- Created `tests/test_api_client.py` — 16 tests with respx mocks
-- 40/40 total Python tests, 91% coverage, ruff/mypy clean
+- Created `worker/src/routes/movies.ts` — TMDb proxy with genre map, M# IDs
+- Created `worker/test/movies.test.ts` — 5 tests with fetchMock
+- Mounted at `/api/movies` in index.ts
 
-- **T2.2 done** (auto-updated by hook)
+- **T3.1 done** (auto-updated by hook)
 
-### Session: 2026-03-31 - T2.2 Couple Worker Routes
+### Session: 2026-04-01 - T3.1 Shared Venue Utilities
 
-- Created `worker/src/routes/couples.ts` — 4 CRUD endpoints with JOIN query
-- Created `worker/test/couples.test.ts` — 9 tests
-- Mounted on `/api/couples` in index.ts
+- Created `worker/src/venues/` with types, ids, cache, sparse utilities
+- Updated Env with API key bindings + vitest test bindings
+- 9 tests written, arch check clean
 
-- **T2.1 done** (auto-updated by hook)
+### Session: 2026-04-01 - Sprint 3 Planning
 
-### Session: 2026-03-31 - T2.1 Profile Worker Routes
-
-- Created `worker/src/routes/profiles.ts` — 5 CRUD endpoints with validation
-- Created `worker/test/profiles.test.ts` — 12 tests
-- Created `worker/test/helpers.ts` — shared migration + auth fetch helpers
-- Mounted on `/api/profiles` in index.ts
-
-### Session: 2026-03-31 - Sprint 2 Planning
-
-- Created Sprint 2 plan (plan-2026-03-sprint2-profiles-couples)
-- Defined 6 tasks covering Worker routes, API client, CLI commands, and integration tests
-- Branch: `feature/sprint2-profiles-couples`
+- Created Sprint 3 plan (plan-2026-04-sprint3-venue-discovery)
+- Defined 5 tasks: shared utilities + 4 venue routes
+- Branch: `feature/sprint3-venue-discovery`
 
 ## What's Next
 
-1. Push branch, create PR, run /simplify + /reviewing-code
-2. Merge, then begin Sprint 3 planning
+1. Run /simplify + /reviewing-code
+2. Push, create PR, merge
 
 ## Blockers
 
