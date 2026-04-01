@@ -47,6 +47,17 @@ describe("POST /api/couples", () => {
     expect(body.error).toBeDefined();
   });
 
+  it("returns 400 for self-couple (partner_a === partner_b)", async () => {
+    const res = await authPost("/api/couples", {
+      id: "couple-self",
+      partner_a: "partner-a",
+      partner_b: "partner-a",
+    });
+    expect(res.status).toBe(400);
+    const body = await res.json<{ error: string }>();
+    expect(body.error).toContain("themselves");
+  });
+
   it("returns 409 for already-linked partner", async () => {
     const res = await authPost("/api/couples", {
       id: "couple-dup",

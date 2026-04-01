@@ -132,6 +132,7 @@ def edit(profile_id: str) -> None:
 
 
 @profile_app.command("delete")
+@handle_api_errors
 def delete(profile_id: str) -> None:
     """Delete a partner profile."""
     try:

@@ -43,6 +43,16 @@ class DateNightClient:
             timeout=timeout,
         )
 
+    def close(self) -> None:
+        """Close the underlying HTTP connection pool."""
+        self._client.close()
+
+    def __enter__(self) -> "DateNightClient":
+        return self
+
+    def __exit__(self, *args: Any) -> None:
+        self.close()
+
     def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
         try:
             response = self._client.request(method, path, **kwargs)

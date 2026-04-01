@@ -133,6 +133,10 @@ profileRoutes.put("/:id", async (c) => {
 
   if (!result.meta.changes) return c.json({ error: "Profile not found" }, 404);
 
+  const existing = await c.env.DB.prepare(
+    "SELECT created_at FROM partners WHERE id = ?"
+  ).bind(c.req.param("id")).first<{ created_at: string }>();
+
   return c.json({
     id: c.req.param("id"),
     name: body.name,
@@ -141,6 +145,7 @@ profileRoutes.put("/:id", async (c) => {
     activities: body.activities,
     dietary_restrictions: body.dietary_restrictions || [],
     dislikes: body.dislikes || [],
+    created_at: existing?.created_at,
     updated_at: now,
   });
 });
