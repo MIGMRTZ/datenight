@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { authMiddleware } from "./middleware/auth";
 import { foreignKeysMiddleware } from "./middleware/db";
+import { activityRoutes } from "./routes/activities";
 import { coupleRoutes } from "./routes/couples";
 import { movieRoutes } from "./routes/movies";
 import { profileRoutes } from "./routes/profiles";
@@ -30,6 +31,7 @@ api.route("/profiles", profileRoutes);
 api.route("/couples", coupleRoutes);
 api.route("/movies", movieRoutes);
 api.route("/restaurants", restaurantRoutes);
+api.route("/activities", activityRoutes);
 
 app.route("/api", api);
 
