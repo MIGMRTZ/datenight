@@ -124,5 +124,89 @@
       }
     ],
     "total_seconds": 89.515024
+  },
+  "T2.1": {
+    "entries": [
+      {
+        "id": "local-20260331170607",
+        "task_id": "T2.1",
+        "description": "T2.1: Profile Worker Routes",
+        "start": "2026-03-31T17:06:07.652846",
+        "end": "2026-03-31T17:18:34.671237",
+        "duration_seconds": 747.018391,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 747.018391
+  },
+  "T2.2": {
+    "entries": [
+      {
+        "id": "local-20260331172015",
+        "task_id": "T2.2",
+        "description": "T2.2: Couple Worker Routes",
+        "start": "2026-03-31T17:20:15.574864",
+        "end": "2026-03-31T17:22:00.033669",
+        "duration_seconds": 104.458805,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 104.458805
+  },
+  "T2.3": {
+    "entries": [
+      {
+        "id": "local-20260331172319",
+        "task_id": "T2.3",
+        "description": "T2.3: Python API Client",
+        "start": "2026-03-31T17:23:19.031905",
+        "end": "2026-03-31T17:25:00.999821",
+        "duration_seconds": 101.967916,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 101.967916
+  },
+  "T2.4": {
+    "entries": [
+      {
+        "id": "local-20260331172527",
+        "task_id": "T2.4",
+        "description": "T2.4: CLI Profile Commands",
+        "start": "2026-03-31T17:25:27.227971",
+        "end": "2026-03-31T17:28:53.903353",
+        "duration_seconds": 206.675382,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 206.675382
+  },
+  "T2.5": {
+    "entries": [
+      {
+        "id": "local-20260331172908",
+        "task_id": "T2.5",
+        "description": "T2.5: CLI Couple Commands",
+        "start": "2026-03-31T17:29:08.849178",
+        "end": "2026-03-31T17:31:07.764717",
+        "duration_seconds": 118.915539,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 118.915539
+  },
+  "T2.6": {
+    "entries": [
+      {
+        "id": "local-20260331173122",
+        "task_id": "T2.6",
+        "description": "T2.6: Integration Tests",
+        "start": "2026-03-31T17:31:22.165372",
+        "end": "2026-03-31T17:32:48.375337",
+        "duration_seconds": 86.209965,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 86.209965
   }
 }
