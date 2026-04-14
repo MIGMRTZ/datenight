@@ -10,7 +10,7 @@ from typing import Any
 from datenight.logging import get_logger
 from datenight.ollama_client import OllamaClient, ParseError
 from datenight.schemas import Phase1Plan, Phase2Critique, Phase3Decision
-from datenight.venue_resolver import ResolvedPlan, VenueMap, resolve_plan
+from datenight.venue_resolver import ResolvedPlan, VenueMap, VenueResolverError, resolve_plan
 
 logger = get_logger("planner")
 
@@ -186,8 +186,8 @@ def run_pipeline(
             )
             logger.info("phase2_complete", score=critique.quality_score)
 
-            # Quality gate: re-roll if score below threshold with critical failures
-            if critique.quality_score < min_quality_score and critique.critical_failures:
+            # Quality gate: re-roll if score below threshold OR critical failures
+            if critique.quality_score < min_quality_score or critique.critical_failures:
                 logger.warning(
                     "quality_gate_failed",
                     score=critique.quality_score,
@@ -212,9 +212,16 @@ def run_pipeline(
             logger.info("phase3_complete", status=decision.status)
 
             final_plan = decision.plan
+
+            # Validate venue IDs in Phase 3 output (may have been revised)
+            invalid_ids = _validate_venue_ids(final_plan, venue_map)
+            if invalid_ids:
+                logger.warning("invalid_venue_ids_phase3", ids=invalid_ids)
+                raise ParseError(f"Phase 3 invalid venue IDs: {invalid_ids}")
+
             return resolve_plan(final_plan, venue_map)
 
-        except ParseError as e:
+        except (ParseError, VenueResolverError) as e:
             logger.warning("pipeline_reroll", attempt=attempt + 1, error=str(e)[:100])
             continue
 

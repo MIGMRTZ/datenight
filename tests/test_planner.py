@@ -135,17 +135,19 @@ def test_full_pipeline_success(venue_map: dict, mock_client: MagicMock):
 
 
 def test_pipeline_with_revision(venue_map: dict, mock_client: MagicMock):
-    """Low score with critical failures triggers re-roll; second attempt has revision."""
-    # Use a low critique WITHOUT critical failures so Phase 3 still runs
-    low_no_critical = json.dumps({
-        "quality_score": 5.0,
-        "issues": [{"severity": "major", "issue": "Wrong type", "suggestion": "Change"}],
-        "strengths": [],
-        "critical_failures": [],
-    })
+    """Score above threshold but Phase 3 revises the plan."""
+    # Score 7.5 (above 7.0 threshold) so quality gate passes, but Phase 3 revises
+    passing_critique = json.dumps(
+        {
+            "quality_score": 7.5,
+            "issues": [{"severity": "major", "issue": "Wrong type", "suggestion": "Change"}],
+            "strengths": ["Decent overlap"],
+            "critical_failures": [],
+        }
+    )
     mock_client.parse_with_retry.side_effect = [
         _parse_json(VALID_PHASE1, "Phase1Plan"),
-        _parse_json(low_no_critical, "Phase2Critique"),
+        _parse_json(passing_critique, "Phase2Critique"),
         _parse_json(VALID_PHASE3_REVISED, "Phase3Decision"),
     ]
     result = run_pipeline(
@@ -161,6 +163,33 @@ def test_pipeline_with_revision(venue_map: dict, mock_client: MagicMock):
     )
     assert result.date_type == "casual"
     assert result.stops[0].venue["name"] == "Bistro 31"
+
+
+def test_quality_gate_low_score_rerolls(venue_map: dict, mock_client: MagicMock):
+    """Low quality score (below threshold) triggers re-roll even without critical failures."""
+    mock_client.parse_with_retry.side_effect = [
+        # Attempt 1: low score → re-roll
+        _parse_json(VALID_PHASE1, "Phase1Plan"),
+        _parse_json(VALID_PHASE2_LOW, "Phase2Critique"),
+        # Attempt 2: good score → success
+        _parse_json(VALID_PHASE1, "Phase1Plan"),
+        _parse_json(VALID_PHASE2_HIGH, "Phase2Critique"),
+        _parse_json(VALID_PHASE3_APPROVED, "Phase3Decision"),
+    ]
+    result = run_pipeline(
+        client=mock_client,
+        profile_a=PROFILE_A,
+        profile_b=PROFILE_B,
+        venue_map=venue_map,
+        history=[],
+        last_date_type=None,
+        max_retries=3,
+        max_parse_retries=3,
+        min_quality_score=7.0,
+    )
+    assert result.date_type == "entertainment"
+    # 5 calls: attempt1 (P1+P2) + attempt2 (P1+P2+P3)
+    assert mock_client.parse_with_retry.call_count == 5
 
 
 def test_reroll_on_parse_failure(venue_map: dict, mock_client: MagicMock):

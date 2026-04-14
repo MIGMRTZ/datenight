@@ -70,12 +70,14 @@ class OllamaClient:
                 options={"temperature": temperature},
             )
             return response["response"]  # type: ignore[no-any-return]
-        except httpx.ConnectError:
+        except httpx.ConnectError as e:
             raise OllamaConnectionError(
                 "Ollama is not running. Start it with `ollama serve` and try again."
-            )
-        except httpx.TimeoutException:
-            raise OllamaTimeoutError("Ollama inference timed out. Check if the model is loaded.")
+            ) from e
+        except httpx.TimeoutException as e:
+            raise OllamaTimeoutError(
+                "Ollama inference timed out. Check if the model is loaded."
+            ) from e
 
     def parse_with_retry(
         self,
@@ -124,10 +126,10 @@ class OllamaClient:
         """Verify Ollama is running and the configured model is available."""
         try:
             result = self._client.list()
-        except httpx.ConnectError:
+        except httpx.ConnectError as e:
             raise OllamaConnectionError(
                 "Ollama is not running. Start it with `ollama serve` and try again."
-            )
+            ) from e
 
         # Handle both ollama 0.3 (dict with "name") and 0.4+ (typed object with "model")
         models = (
