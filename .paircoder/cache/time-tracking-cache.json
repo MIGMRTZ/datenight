@@ -278,5 +278,75 @@
       }
     ],
     "total_seconds": 231.416775
+  },
+  "T4.1": {
+    "entries": [
+      {
+        "id": "local-20260414122616",
+        "task_id": "T4.1",
+        "description": "T4.1: Pydantic Schemas",
+        "start": "2026-04-14T12:26:16.914109",
+        "end": "2026-04-14T12:28:02.014905",
+        "duration_seconds": 105.100796,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 105.100796
+  },
+  "T4.2": {
+    "entries": [
+      {
+        "id": "local-20260414122907",
+        "task_id": "T4.2",
+        "description": "T4.2: Venue Resolver",
+        "start": "2026-04-14T12:29:07.092875",
+        "end": "2026-04-14T12:31:09.600899",
+        "duration_seconds": 122.508024,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 122.508024
+  },
+  "T4.3": {
+    "entries": [
+      {
+        "id": "local-20260414123127",
+        "task_id": "T4.3",
+        "description": "T4.3: Ollama Client + JSON Cleanup",
+        "start": "2026-04-14T12:31:27.599781",
+        "end": "2026-04-14T12:33:21.270765",
+        "duration_seconds": 113.670984,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 113.670984
+  },
+  "T4.4": {
+    "entries": [
+      {
+        "id": "local-20260414123344",
+        "task_id": "T4.4",
+        "description": "T4.4: Three-Phase Planner",
+        "start": "2026-04-14T12:33:44.843574",
+        "end": "2026-04-14T12:36:14.101816",
+        "duration_seconds": 149.258242,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 149.258242
+  },
+  "T4.5": {
+    "entries": [
+      {
+        "id": "local-20260414123650",
+        "task_id": "T4.5",
+        "description": "T4.5: Fixture Data",
+        "start": "2026-04-14T12:36:50.372071",
+        "end": "2026-04-14T12:38:16.483958",
+        "duration_seconds": 86.111887,
+        "provider_id": null
+      }
+    ],
+    "total_seconds": 86.111887
   }
 }

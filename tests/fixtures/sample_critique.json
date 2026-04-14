@@ -1,0 +1,16 @@
+{
+  "quality_score": 8.5,
+  "issues": [
+    {
+      "severity": "minor",
+      "issue": "No backup plan if comedy show is sold out",
+      "suggestion": "Add a fallback venue like Top Golf"
+    }
+  ],
+  "strengths": [
+    "Good preference overlap — comedy ranked high by both",
+    "Venues are walkable from each other",
+    "Date type varied from last time (was food_crawl)"
+  ],
+  "critical_failures": []
+}

@@ -1,0 +1,71 @@
+{
+  "restaurants": [
+    {
+      "id": "R1",
+      "name": "Craft & Co Bar",
+      "address": "123 Main St, Waxahachie, TX",
+      "cuisine": "American",
+      "rating": 4.5,
+      "price": "$$",
+      "yelp_slug": "craft-and-co-bar-waxahachie",
+      "lat": 32.3866,
+      "lng": -96.8483
+    },
+    {
+      "id": "R2",
+      "name": "Bistro 31",
+      "address": "456 Oak Ave, Waxahachie, TX",
+      "cuisine": "Italian",
+      "rating": 4.2,
+      "price": "$$$",
+      "yelp_slug": "bistro-31-waxahachie",
+      "lat": 32.3901,
+      "lng": -96.8512
+    }
+  ],
+  "movies": [
+    {
+      "id": "M1",
+      "name": "The Matrix 5",
+      "genre": "Sci-Fi, Action",
+      "rating": 7.8,
+      "synopsis": "Neo returns once more.",
+      "poster_url": "https://image.tmdb.org/t/p/w500/matrix5.jpg",
+      "tmdb_id": 999
+    }
+  ],
+  "activities": [
+    {
+      "id": "A1",
+      "name": "Top Golf",
+      "category": "Entertainment",
+      "address": "789 Golf Dr, Waxahachie, TX",
+      "rating": 4.3,
+      "yelp_slug": "top-golf-waxahachie",
+      "lat": 32.395,
+      "lng": -96.843
+    },
+    {
+      "id": "A2",
+      "name": "The Improv House",
+      "category": "Comedy Clubs",
+      "address": "100 Comedy Ln, Waxahachie, TX",
+      "rating": 4.6,
+      "yelp_slug": "improv-house-waxahachie",
+      "lat": 32.39,
+      "lng": -96.85
+    }
+  ],
+  "events": [
+    {
+      "id": "E1",
+      "name": "Jazz Night Downtown",
+      "date": "2026-04-05",
+      "time": "20:00",
+      "venue": "The Blue Note",
+      "address": "500 Jazz Ave, Waxahachie, TX",
+      "eventbrite_id": "eb-001",
+      "url": "https://www.eventbrite.com/e/eb-001"
+    }
+  ]
+}
