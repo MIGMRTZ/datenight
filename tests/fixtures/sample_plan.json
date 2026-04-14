@@ -1,0 +1,21 @@
+{
+  "date_type": "entertainment",
+  "theme": "Comedy & Craft Cocktails",
+  "reasoning": "Both partners ranked comedy in their top 3 activities. Alex loves cocktails and Jordan prefers smaller venues. Craft & Co is a 5-min walk from the comedy club. Last comedy night was rated 4/5, so keeping the genre.",
+  "stops": [
+    {
+      "order": 1,
+      "venue_id": "A2",
+      "time": "7:00 PM",
+      "duration_min": 90,
+      "why": "Both rated comedy high in activities. The Improv House has great reviews."
+    },
+    {
+      "order": 2,
+      "venue_id": "R1",
+      "time": "9:00 PM",
+      "duration_min": 60,
+      "why": "Craft cocktail menu suits Alex, small venue suits Jordan. Walkable from comedy club."
+    }
+  ]
+}
