@@ -40,7 +40,7 @@ class PlanningError(Exception):
 
 
 def _format_profile(profile: dict[str, Any]) -> str:
-    lines = [f"Name: {profile['name']}"]
+    lines = [f"Name: {profile.get('name', 'Unknown')}"]
     for key in ["cuisines", "movie_genres", "activities", "dietary_restrictions", "dislikes"]:
         values = profile.get(key, [])
         if values:
@@ -50,11 +50,10 @@ def _format_profile(profile: dict[str, Any]) -> str:
 
 
 def _format_venues(venue_map: VenueMap) -> str:
-    sections: list[str] = []
-    categories = {"R": "Restaurants", "M": "Movies", "A": "Activities", "E": "Events"}
-    grouped: dict[str, list[str]] = {k: [] for k in categories}
+    prefix_labels = {"R": "Restaurants", "M": "Movies", "A": "Activities", "E": "Events"}
+    grouped: dict[str, list[str]] = {}
 
-    for vid, venue in sorted(venue_map.items()):
+    for vid, venue in venue_map.items():
         prefix = vid[0]
         name = venue.get("name", "Unknown")
         details: list[str] = []
@@ -64,10 +63,10 @@ def _format_venues(venue_map: VenueMap) -> str:
         detail_str = f" — {', '.join(details)}" if details else ""
         grouped.setdefault(prefix, []).append(f"[{vid}] {name}{detail_str}")
 
-    for prefix, label in categories.items():
-        items = grouped.get(prefix, [])
-        if items:
-            sections.append(f"{label}:\n" + "\n".join(f"  {item}" for item in items))
+    sections: list[str] = []
+    for prefix in sorted(grouped.keys()):
+        label = prefix_labels.get(prefix, f"Other ({prefix})")
+        sections.append(f"{label}:\n" + "\n".join(f"  {item}" for item in grouped[prefix]))
     return "\n\n".join(sections)
 
 
@@ -186,6 +185,19 @@ def run_pipeline(
                 max_retries=max_parse_retries,
             )
             logger.info("phase2_complete", score=critique.quality_score)
+
+            # Quality gate: re-roll if score below threshold with critical failures
+            if critique.quality_score < min_quality_score and critique.critical_failures:
+                logger.warning(
+                    "quality_gate_failed",
+                    score=critique.quality_score,
+                    threshold=min_quality_score,
+                    critical=critique.critical_failures,
+                )
+                raise ParseError(
+                    f"Quality score {critique.quality_score} below threshold "
+                    f"{min_quality_score} with critical failures"
+                )
 
             # Phase 3: Approve or Revise
             critique_json = critique.model_dump_json()

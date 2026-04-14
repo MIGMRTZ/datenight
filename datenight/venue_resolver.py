@@ -8,7 +8,7 @@ from typing import Any
 
 from pydantic import BaseModel
 
-from datenight.schemas import Phase1Plan
+from datenight.schemas import DATE_TYPES, Phase1Plan, Stop
 
 VenueMap = dict[str, dict[str, Any]]
 
@@ -17,21 +17,16 @@ class VenueResolverError(Exception):
     """Raised when a venue ID in the plan cannot be found in the venue map."""
 
 
-class ResolvedStop(BaseModel):
+class ResolvedStop(Stop):
     """A stop with full venue data attached."""
 
-    order: int
-    venue_id: str
-    time: str
-    duration_min: int
-    why: str
     venue: dict[str, Any]
 
 
 class ResolvedPlan(BaseModel):
     """A Phase1Plan with all stops resolved to full venue records."""
 
-    date_type: str
+    date_type: DATE_TYPES
     theme: str
     reasoning: str
     stops: list[ResolvedStop]
@@ -64,16 +59,7 @@ def resolve_plan(plan: Phase1Plan, venue_map: VenueMap) -> ResolvedPlan:
     for stop in plan.stops:
         if stop.venue_id not in venue_map:
             raise VenueResolverError(f"Venue ID {stop.venue_id!r} not found in venue data.")
-        resolved_stops.append(
-            ResolvedStop(
-                order=stop.order,
-                venue_id=stop.venue_id,
-                time=stop.time,
-                duration_min=stop.duration_min,
-                why=stop.why,
-                venue=venue_map[stop.venue_id],
-            )
-        )
+        resolved_stops.append(ResolvedStop(**stop.model_dump(), venue=venue_map[stop.venue_id]))
 
     return ResolvedPlan(
         date_type=plan.date_type,

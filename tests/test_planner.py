@@ -135,10 +135,17 @@ def test_full_pipeline_success(venue_map: dict, mock_client: MagicMock):
 
 
 def test_pipeline_with_revision(venue_map: dict, mock_client: MagicMock):
-    """Low score triggers Phase 3 revision."""
+    """Low score with critical failures triggers re-roll; second attempt has revision."""
+    # Use a low critique WITHOUT critical failures so Phase 3 still runs
+    low_no_critical = json.dumps({
+        "quality_score": 5.0,
+        "issues": [{"severity": "major", "issue": "Wrong type", "suggestion": "Change"}],
+        "strengths": [],
+        "critical_failures": [],
+    })
     mock_client.parse_with_retry.side_effect = [
         _parse_json(VALID_PHASE1, "Phase1Plan"),
-        _parse_json(VALID_PHASE2_LOW, "Phase2Critique"),
+        _parse_json(low_no_critical, "Phase2Critique"),
         _parse_json(VALID_PHASE3_REVISED, "Phase3Decision"),
     ]
     result = run_pipeline(

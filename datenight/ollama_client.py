@@ -94,10 +94,11 @@ class OllamaClient:
 
         for attempt in range(max_retries):
             if attempt > 0 and last_error:
+                # Send only error feedback, not the full original prompt (saves tokens)
                 current_prompt = (
-                    f"Your previous output was invalid JSON. The error was: {last_error}\n"
-                    f"Please fix and respond with ONLY a valid JSON object.\n\n"
-                    f"Original request: {prompt}"
+                    f"Your previous output was invalid. The error was: {last_error}\n"
+                    f"Please fix and respond with ONLY a valid JSON object matching "
+                    f"the {schema.__name__} schema."
                 )
 
             raw = self.generate(current_prompt, system, temperature)
@@ -128,7 +129,19 @@ class OllamaClient:
                 "Ollama is not running. Start it with `ollama serve` and try again."
             )
 
-        model_names = [m.get("name", "") for m in result.get("models", [])]
+        # Handle both ollama 0.3 (dict with "name") and 0.4+ (typed object with "model")
+        models = (
+            result.get("models", []) if isinstance(result, dict) else getattr(result, "models", [])
+        )
+        model_names: list[str] = []
+        for m in models:
+            name = (
+                m.get("name", "")
+                if isinstance(m, dict)
+                else getattr(m, "model", getattr(m, "name", ""))
+            )
+            if name:
+                model_names.append(name)
         if self._model not in model_names:
             raise OllamaModelNotFoundError(
                 f"Model {self._model!r} not found. Pull it with `ollama pull {self._model}`."
